@@ -19,3 +19,4 @@ $(document).on("click", ".devour-it", function(event) {
             console.log(status + ": " + err);
         });
 });
+

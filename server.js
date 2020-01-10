@@ -2,6 +2,7 @@
 
 const express = require("express");
 const exphbrs = require("express-handlebars");
+const db = require("./models");
 const burgerController = require("./controllers/burger_controller");
 
 const app = express();
@@ -16,6 +17,8 @@ app.set("view engine", "handlebars");
 
 app.use("/", burgerController);
 
-app.listen(PORT, () => {
-    console.log(`Server listening on PORT ${PORT}`);
+db.sequelize.sync().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server listening on PORT ${PORT}`);
+    });
 })

@@ -1,43 +1,31 @@
 const express = require("express");
-const Burger = require("../models/burger");
-
 const router = express.Router();
+const db = require("../models");
 
 router.get("/", (req, res) => {
-    Burger.selectAll().then(burgers => {
-        let devoured = [];
-        let notDevoured = [];
-
-        burgers.forEach(burger => {
-            if (burger.devoured) {
-                devoured.push(burger);
-            } else {
-                notDevoured.push(burger);
-            }
+    db.burger.findAll({}).then(burgers => {
+        res.render("index", {
+            devoured: burgers.filter(burger => burger.devoured),
+            notDevoured: burgers.filter(burger => !burger.devoured)
         });
-
-        res.render("index", { devoured, notDevoured });
     });
 });
 
 router.post("/api/burger", (req, res) => {
-    Burger.insertOne(req.body)
-    .then(result => {
+    db.burger.create({
+        burger_name: req.body.burger_name
+    }).then(burger => {
         res.redirect("/");
-    })
-    .catch(error => {
-        res.sendStatus(500);
-    })
+    });
 });
 
 router.put("/api/burger/:id", (req, res) => {
-    Burger.updateOne(req.body, { id: req.params.id })
-    .then(result => {
-        res.sendStatus(200);
-    })
-    .catch(error => {
-        res.sendStatus(500);
-    })
+    db.burger.update(
+        req.body,
+        { where: { id: req.params.id } }
+    ).then(burger => {
+        res.json(burger);
+    });
 });
 
 module.exports = router;
